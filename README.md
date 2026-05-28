@@ -1,98 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📦 Mini API Boxful
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST construida con **NestJS** que simula las funcionalidades de Boxful: autenticación de usuarios, registro, creación de órdenes de envío y consulta de historial por rango de fechas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🚀 Funcionalidades
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 🔓 **Inicio de sesión** — Autenticación con correo y contraseña
+- 📝 **Registro de usuarios** — Nombre, apellido, sexo, fecha de nacimiento, correo, teléfono y contraseña
+- 📦 **Creación de órdenes** — Dirección de recolección, datos del destinatario y array de paquetes con dimensiones y contenido
+- 📋 **Historial de órdenes** — Consulta filtrada por rango de fechas con resumen de cada orden
 
-## Project setup
+---
 
-```bash
-$ npm install
+## 📄 Documentación de la API
+
+La documentación completa de todos los endpoints está disponible en Postman:
+
+🔗 [Ver documentación en Postman](https://documenter.getpostman.com/view/46628987/2sBXwmRtQN)
+
+---
+
+## 🛠️ Stack Tecnológico
+
+| Tecnología | Uso |
+|---|---|
+| **NestJS** | Framework principal (Node.js) |
+| **TypeScript** | Lenguaje tipado |
+| **Prisma ORM** | Acceso y modelado de base de datos |
+| **MongoDB** | Base de datos NoSQL |
+| **JWT (Passport.js)** | Autenticación stateless |
+| **bcrypt** | Hash de contraseñas |
+| **dotenv** | Variables de entorno |
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+backend-boxful/
+├── prisma/
+│   └── schema.prisma                  # Modelos de base de datos
+├── src/
+│   ├── auth/
+│   │   ├── decorators/
+│   │   │   └── get-user.decorator.ts  # Decorador para obtener usuario autenticado
+│   │   ├── dto/
+│   │   │   ├── login.dto.ts           # DTO de inicio de sesión
+│   │   │   └── register.dto.ts        # DTO de registro
+│   │   ├── guards/
+│   │   │   └── jwt-auth.guard.ts      # Guard de autenticación JWT
+│   │   ├── auth.controller.ts
+│   │   ├── auth.module.ts
+│   │   ├── auth.service.ts
+│   │   └── jwt.strategy.ts            # Estrategia JWT con Passport
+│   ├── orders/
+│   │   ├── dto/
+│   │   │   ├── create-order.dto.ts    # DTO de creación de orden
+│   │   │   ├── create-package.dto.ts  # DTO de paquetes
+│   │   │   └── order-history-query.dto.ts  # DTO de filtro por fechas
+│   │   ├── orders.controller.ts
+│   │   ├── orders.module.ts
+│   │   └── orders.service.ts
+│   ├── prisma/
+│   │   ├── prisma.module.ts
+│   │   └── prisma.service.ts          # Servicio de conexión a la BD
+│   ├── app.controller.ts
+│   ├── app.module.ts
+│   ├── app.service.ts
+│   └── main.ts                        # Punto de entrada de la aplicación
+├── .env.example
+├── package.json
+└── README.md
 ```
 
-## Compile and run the project
+---
+
+## ⚙️ Instalación y configuración
+
+### 1. Clonar el repositorio
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/Roberto640Alvarado/backend-boxful.git
+cd backend-boxful
 ```
 
-## Run tests
+### 2. Instalar dependencias
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
+### 3. Configurar variables de entorno
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Crea un archivo `.env` en la raíz del proyecto:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+cp .env.example .env
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Edita el `.env` con tus valores:
 
-## Resources
+```env
+DATABASE_URL="mongodb+srv://<usuario>:<contraseña>@cluster.mongodb.net/boxful_db"
+JWT_SECRET=tu_clave_secreta
+PORT=3000
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 4. Sincronizar Prisma con la base de datos
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npx prisma generate
+```
 
-## Support
+### 5. Ejecutar el proyecto
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Modo desarrollo:**
 
-## Stay in touch
+```bash
+npm run start:dev
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Modo producción:**
 
-## License
+```bash
+npm run build
+npm run start:prod
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+La API estará disponible en: `http://localhost:3000`
+
+---
+
+## 🔐 Endpoints principales
+
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| `POST` | `/auth/login` | Público | Inicio de sesión |
+| `POST` | `/auth/register` | Público | Registro de usuario |
+| `POST` | `/orders` | Privado 🔒 | Crear una orden |
+| `GET` | `/orders/history` | Privado 🔒 | Historial por rango de fechas |
+
+> Los endpoints privados requieren el header: `Authorization: Bearer <token>`

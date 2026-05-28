@@ -2,11 +2,16 @@ import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsDateString,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
   IsString,
   MaxLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { CreatePackageDto } from './create-package.dto';
@@ -71,6 +76,16 @@ export class CreateOrderDto {
     message: 'Las indicaciones no pueden exceder 500 caracteres',
   })
   indicaciones!: string;
+
+  // Campos COD
+  @IsBoolean({ message: 'isCOD debe ser verdadero o falso' })
+  @IsOptional()
+  isCOD?: boolean;
+
+  @ValidateIf((o: CreateOrderDto) => o.isCOD === true)
+  @IsNumber({}, { message: 'El monto esperado debe ser un número' })
+  @IsPositive({ message: 'El monto esperado debe ser mayor a 0' })
+  expectedAmount?: number;
 
   @IsArray({ message: 'Los paquetes deben ser un arreglo' })
   @ArrayMinSize(1, { message: 'Debe incluir al menos un paquete' })

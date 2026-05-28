@@ -11,9 +11,34 @@ import type { OrderHistoryQueryDto } from './dto/order-history-query.dto';
 export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Dias de la semana para consultar el costo de envio
+  private getDayName(): string {
+    const days = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ];
+    return days[new Date().getDay()];
+  }
+
   // Crea una nueva orden con sus paquetes asociados al usuario autenticado
-  // El numeroOrden se genera de forma secuencial basado en el total de ordenes existentes
   async createOrder(userId: string, dto: CreateOrderDto) {
+    // Obtener costo de envio segun el dia actual
+    const day = this.getDayName();
+    const shippingCostConfig = await this.prisma.shippingCost.findUnique({
+      where: { day },
+    });
+
+    if (!shippingCostConfig) {
+      throw new InternalServerErrorException(
+        `No existe configuración de costo de envío para el día: ${day}`,
+      );
+    }
+
     // Generar número de orden secuencial
     const totalOrdenes = await this.prisma.order.count();
     const numeroOrden = 1000000 + totalOrdenes + 1;
@@ -33,6 +58,9 @@ export class OrdersService {
           municipio: dto.municipio,
           puntoReferencia: dto.puntoReferencia,
           indicaciones: dto.indicaciones,
+          isCOD: dto.isCOD ?? false,
+          expectedAmount: dto.expectedAmount ?? null,
+          shippingCost: shippingCostConfig.cost,
           userId,
           paquetes: {
             create: dto.paquetes,
@@ -58,6 +86,10 @@ export class OrdersService {
           municipio: orden.municipio,
           puntoReferencia: orden.puntoReferencia,
           indicaciones: orden.indicaciones,
+          isCOD: orden.isCOD,
+          expectedAmount: orden.expectedAmount,
+          shippingCost: orden.shippingCost,
+          status: orden.status,
           cantidadPaquetes: orden.paquetes.length,
           paquetes: orden.paquetes,
           creadoEn: orden.createdAt,
@@ -70,12 +102,33 @@ export class OrdersService {
     }
   }
 
-  // Devuelve el historial de órdenes del usuario autenticado,
-  // con filtrado opcional por rango de fechas (fechaInicio y fechaFin)
+  // Devuelve el balance acumulado total de liquidacion del usuario autenticado
+  async getBalance(userId: string) {
+    const ordenes = await this.prisma.order.findMany({
+      where: {
+        userId,
+        status: 'delivered',
+        settlementAmount: { not: null },
+      },
+      select: {
+        settlementAmount: true,
+      },
+    });
+
+    const balance = ordenes.reduce(
+      (acc, orden) => acc + (orden.settlementAmount ?? 0),
+      0,
+    );
+
+    return {
+      balance: parseFloat(balance.toFixed(2)),
+    };
+  }
+
+  // Devuelve el historial de órdenes del usuario autenticado
   async getOrderHistory(userId: string, query: OrderHistoryQueryDto) {
     const { fechaInicio, fechaFin } = query;
 
-    // Validación cruzada: si se envía fechaFin, debe ser >= fechaInicio
     if (fechaInicio && fechaFin && new Date(fechaFin) < new Date(fechaInicio)) {
       throw new BadRequestException(
         'La fechaFin no puede ser anterior a fechaInicio',

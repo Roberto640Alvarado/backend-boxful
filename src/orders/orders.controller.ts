@@ -35,4 +35,10 @@ export class OrdersController {
   ) {
     return this.ordersService.getOrderHistory(user.id, query);
   }
+
+  // Devuelve el balance acumulado de liquidacion del usuario autenticado
+  @Get('balance')
+  getBalance(@GetUser() user: AuthenticatedUser) {
+    return this.ordersService.getBalance(user.id);
+  }
 }

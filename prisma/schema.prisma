@@ -12,6 +12,11 @@ enum Sexo {
   F
 }
 
+enum OrderStatus {
+  pending
+  delivered
+}
+
 model User {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   nombre          String
@@ -40,6 +45,14 @@ model Order {
   municipio             String
   puntoReferencia       String
   indicaciones          String
+
+  isCOD                 Boolean     @default(false)
+  expectedAmount        Float?
+  collectedAmount       Float?
+  status                OrderStatus @default(pending)
+  shippingCost          Float?
+  settlementAmount      Float?
+
   createdAt             DateTime  @default(now())
 
   userId                String    @db.ObjectId
@@ -58,4 +71,10 @@ model Package {
 
   orderId   String  @db.ObjectId
   order     Order   @relation(fields: [orderId], references: [id])
+}
+
+model ShippingCost {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  day   String @unique // monday, tuesday, wednesday, thursday, friday, saturday, sunday
+  cost  Float
 }
